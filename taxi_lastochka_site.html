@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Такси "Ласточка" - Комфорт круглосуточно</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: #000;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(0,0,0,0.75), rgba(255,193,7,0.25)), 
+                        url('https://images.unsplash.com/photo-1519167758481-83f29c55eaaf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,193,7,0.1) 0%, rgba(0,0,0,0.6) 50%, rgba(255,193,7,0.1) 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-content {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FFC107;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::before {
+            content: '🕊️';
+            position: absolute;
+            left: -60px;
+            top: -10px;
+            font-size: 3rem;
+            animation: fly 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes fly {
+            from { transform: translateY(0px) rotate(-5deg); }
+            to { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #E0E0E0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .services {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .service-item {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid #FFC107;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .service-item:hover::before {
+            transform: scale(1);
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255,193,7,0.3);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            color: #FFC107;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .service-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, rgba(255,193,7,0.9), rgba(255,152,0,0.9));
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            color: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: slide 3s infinite;
+        }
+
+        @keyframes slide {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .phone-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .driver-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .city-lights {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #FFC107;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #FFC107;
+            animation: cityLights 4s linear infinite;
+        }
+
+        .city-lights:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .city-lights:nth-child(2) { top: 30%; left: 30%; animation-delay: 1s; }
+        .city-lights:nth-child(3) { top: 40%; left: 70%; animation-delay: 2s; }
+        .city-lights:nth-child(4) { top: 60%; left: 20%; animation-delay: 3s; }
+        .city-lights:nth-child(5) { top: 70%; left: 80%; animation-delay: 0.5s; }
+
+        @keyframes cityLights {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        .floating-car {
+            position: absolute;
+            color: rgba(255,193,7,0.3);
+            font-size: 2rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-car:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-car:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-car:nth-child(3) {
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .pulse-button {
+            display: inline-block;
+            background: #FF5722;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            position: relative;
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .pulse-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255,87,34,0.5);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255,87,34,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .logo::before {
+                left: -40px;
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.3rem;
+            }
+
+            .phone-number {
+                font-size: 1.8rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+        }
+
+        .taxi-icon {
+            display: inline-block;
+            margin: 0 10px;
+            animation: drive 4s linear infinite;
+        }
+
+        @keyframes drive {
+            0% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            100% { transform: translateX(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="floating-elements">
+            <div class="city-lights"></div>
+            <div class="city-lights"></div>
+            <div class="city-lights"></div>
+            <div class="city-lights"></div>
+            <div class="city-lights"></div>
+            <div class="floating-car">🚗</div>
+            <div class="floating-car">🚕</div>
+            <div class="floating-car">🚙</div>
+        </div>
+        
+        <div class="container">
+            <div class="main-content">
+                <h1 class="logo">"Ласточка"</h1>
+                <p class="subtitle">
+                    комфорт <span class="taxi-icon">🚖</span> TAXI круглосуточно
+                </p>
+                
+                <div class="services">
+                    <div class="services-grid">
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-trailer"></i>
+                            </div>
+                            <div class="service-text">
+                                Перевозка с прицепом
+                            </div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <div class="service-text">
+                                Доставка медикаментов, товаров, продуктов
+                            </div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="service-text">
+                                Трезвый водитель
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-section">
+                        <div class="phone-number">
+                            <i class="fas fa-phone-alt"></i>
+                            067-25-39-680
+                        </div>
+                        <div class="driver-name">АЛЕКСАНДР</div>
+                        <a href="tel:0672539680" class="pulse-button">
+                            <i class="fas fa-phone"></i> Позвонить сейчас
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Добавляем интерактивность
+        document.addEventListener('DOMContentLoaded', function() {
+            // Анимация при скролле
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const hero = document.querySelector('.hero');
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            });
+
+            // Добавляем эффект мерцания звезд
+            function createStar() {
+                const star = document.createElement('div');
+                star.innerHTML = '✨';
+                star.style.position = 'absolute';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.fontSize = '1rem';
+                star.style.opacity = '0';
+                star.style.pointerEvents = 'none';
+                star.style.animation = 'twinkle 2s ease-in-out forwards';
+                
+                document.querySelector('.floating-elements').appendChild(star);
+                
+                setTimeout(() => {
+                    star.remove();
+                }, 2000);
+            }
+
+            // Создаем звезды каждые 3 секунды
+            setInterval(createStar, 3000);
+
+            // Добавляем CSS для анимации звезд
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes twinkle {
+                    0% { opacity: 0; transform: scale(0) rotate(0deg); }
+                    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+                    100% { opacity: 0; transform: scale(0) rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
