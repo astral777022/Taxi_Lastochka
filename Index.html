@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Калькулятор закона Ома</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;min-height:100vh;margin:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071029 0%, #0b1220 100%);color:#e6eef6;padding:24px}
+    .card{width:100%;max-width:720px;background:linear-gradient(180deg,rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:22px;box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    .field{background:var(--glass);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    input[type="number"], select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:15px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
+    button{background:var(--accent);border:none;color:#04202a;padding:10px 12px;border-radius:8px;font-weight:600;cursor:pointer}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .result{margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(6,182,212,0.06), rgba(6,182,212,0.03));border:1px solid rgba(6,182,212,0.08);font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
+    .full{grid-column:1/-1}
+    footer{margin-top:14px;color:var(--muted);font-size:13px}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>Калькулятор закона Ома</h1>
+    <p class="lead">Вычисляет напряжение (V), силу тока (I) или сопротивление (R). Оставьте пустым то, что нужно найти.</p>
+
+    <form id="ohmForm" class="grid" autocomplete="off" onsubmit="return false;">
+      <div>
+        <label for="voltage">Напряжение (V)</label>
+        <div class="field">
+          <input id="voltage" type="number" step="any" inputmode="decimal" placeholder="напр., 12" />
+        </div>
+      </div>
+
+      <div>
+        <label for="voltageUnit">Единицы напряжения</label>
+        <div class="field">
+          <select id="voltageUnit" aria-label="Единицы напряжения">
+            <option value="1">Вольт (V)</option>
+            <option value="0.001">Милливольт (mV)</option>
+            <option value="0.001000">Вольт (V) — alias</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="current">Ток (I)</label>
+        <div class="field">
+          <input id="current" type="number" step="any" inputmode="decimal" placeholder="напр., 0.5" />
+        </div>
+      </div>
+
+      <div>
+        <label for="currentUnit">Единицы тока</label>
+        <div class="field">
+          <select id="currentUnit">
+            <option value="1">Ампер (A)</option>
+            <option value="0.001">Миллиампер (mA)</option>
+            <option value="0.000001">Микроампер (µA)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="resistance">Сопротивление (R)</label>
+        <div class="field">
+          <input id="resistance" type="number" step="any" inputmode="decimal" placeholder="напр., 220" />
+        </div>
+      </div>
+
+      <div>
+        <label for="resistanceUnit">Единицы сопротивления</label>
+        <div class="field">
+          <select id="resistanceUnit">
+            <option value="1">Ом (Ω)</option>
+            <option value="1000">Килоом (kΩ)</option>
+            <option value="1000000">Мегаом (MΩ)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="full small">Примечание: оставьте **одно** поле пустым — приложение вычислит его по закону Ома: <code>V = I × R</code>.</div>
+
+      <div class="full controls">
+        <button id="calcBtn" type="button">Вычислить</button>
+        <button id="clearBtn" class="secondary" type="button">Очистить</button>
+        <button id="swapBtn" class="secondary" type="button">Поменять местами V ↔ I</button>
+      </div>
+
+      <div id="output" class="result full" aria-live="polite">Результат появится здесь</div>
+
+      <div class="full small">
+        <strong>Что делает приложение:</strong> при вводе двух значений вычисляет третье. Преобразует единицы автоматически.
+      </div>
+    </form>
+
+    <footer>Нужна версия с поддержкой единиц SI-приставок, истории вычислений или PWA? Скажи, добавлю.</footer>
+  </main>
+
+  <script>
+    // Утилиты
+    const $ = id => document.getElementById(id);
+    const parseInput = (el) => {
+      const raw = el.value.trim();
+      if(raw === '') return null;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function unitMultiplier(select) {
+      return Number(select.value);
+    }
+
+    function formatValue(value, unitName){
+      if(!Number.isFinite(value)) return '—';
+      // округлим до удобного количества знаков
+      const abs = Math.abs(value);
+      let digits = 4;
+      if(abs >= 100) digits = 2;
+      if(abs >= 1000) digits = 1;
+      return `${Number(value.toFixed(digits))} ${unitName}`;
+    }
+
+    // Элементы
+    const voltageEl = $('voltage');
+    const voltageUnitEl = $('voltageUnit');
+    const currentEl = $('current');
+    const currentUnitEl = $('currentUnit');
+    const resistanceEl = $('resistance');
+    const resistanceUnitEl = $('resistanceUnit');
+    const outputEl = $('output');
+    const calcBtn = $('calcBtn');
+    const clearBtn = $('clearBtn');
+    const swapBtn = $('swapBtn');
+
+    function compute() {
+      const V_raw = parseInput(voltageEl);
+      const I_raw = parseInput(currentEl);
+      const R_raw = parseInput(resistanceEl);
+
+      // Преобразуем в базовые единицы: V (В), I (А), R (Ом)
+      const V = (V_raw === null) ? null : V_raw * unitMultiplier(voltageUnitEl);
+      const I = (I_raw === null) ? null : I_raw * unitMultiplier(currentUnitEl);
+      const R = (R_raw === null) ? null : R_raw * unitMultiplier(resistanceUnitEl);
+
+      const filled = [V !== null, I !== null, R !== null].filter(Boolean).length;
+      if(filled < 2) {
+        outputEl.textContent = 'Пожалуйста, заполните как минимум два поля (одно — оставьте пустым для вычисления).';
+        return;
+      }
+      if(filled > 2) {
+        // Если все три заполнены — проверим корректность с небольшой допустимой погрешностью
+        const tol = 1e-6;
+        const ok = Math.abs(V - I * R) <= Math.max(Math.abs(V), Math.abs(I*R), 1) * tol;
+        if(ok) {
+          outputEl.textContent = 'Все три значения согласованы (V ≈ I × R).';
+        } else {
+          outputEl.textContent = 'Ввод содержит три значения, но они не согласуются по закону Ома (V ≠ I × R). Проверьте ввод.';
+        }
+        return;
+      }
+
+      // Два значения — вычисляем третье
+      let resultText = '';
+      if(V === null) {
+        // V = I * R
+        const Vcalc = I * R;
+        // Показать в единицах, выбранных пользователем для напряжения
+        const displayed = Vcalc / unitMultiplier(voltageUnitEl);
+        resultText = `Напряжение V = ${formatValue(displayed, getUnitName(voltageUnitEl))} (V = I × R)`;
+      } else if(I === null) {
+        // I = V / R
+        if(R === 0) { outputEl.textContent = 'Ошибка: сопротивление R = 0 (деление на ноль).'; return; }
+        const Icalc = V / R;
+        const displayed = Icalc / unitMultiplier(currentUnitEl);
+        resultText = `Ток I = ${formatValue(displayed, getUnitName(currentUnitEl))} (I = V / R)`;
+      } else if(R === null) {
+        // R = V / I
+        if(I === 0) { outputEl.textContent = 'Ошибка: ток I = 0 (деление на ноль).'; return; }
+        const Rcalc = V / I;
+        const displayed = Rcalc / unitMultiplier(resistanceUnitEl);
+        resultText = `Сопротивление R = ${formatValue(displayed, getUnitName(resistanceUnitEl))} (R = V / I)`;
+      }
+
+      outputEl.textContent = resultText;
+    }
+
+    function getUnitName(selectEl){
+      const opt = selectEl.options[selectEl.selectedIndex]?.text || '';
+      return opt;
+    }
+
+    calcBtn.addEventListener('click', compute);
+
+    clearBtn.addEventListener('click', ()=>{
+      voltageEl.value = '';
+      currentEl.value = '';
+      resistanceEl.value = '';
+      outputEl.textContent = 'Результат появится здесь';
+    });
+
+    swapBtn.addEventListener('click', ()=>{
+      // Поменяем местами значения напряжения и тока (и их единицы).
+      const v = voltageEl.value, vu = voltageUnitEl.value, vc = voltageUnitEl.selectedIndex;
+      const i = currentEl.value, iu = currentUnitEl.value, ic = currentUnitEl.selectedIndex;
+      voltageEl.value = i; voltageUnitEl.value = iu; voltageUnitEl.selectedIndex = ic;
+      currentEl.value = v; currentUnitEl.value = vu; currentUnitEl.selectedIndex = vc;
+    });
+
+    // Enter -> вычислить
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); compute(); } });
+
+    // Небольшая подсказка: если пользователь вводит числа с запятой (русская локаль), заменим запятую на точку
+    [voltageEl, currentEl, resistanceEl].forEach(el => {
+      el.addEventListener('input', (ev)=>{
+        const val = el.value;
+        if(val.includes(',')) el.value = val.replace(',', '.');
+      });
+    });
+
+  </script>
+</body>
+</html>
